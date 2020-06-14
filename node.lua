@@ -46,8 +46,6 @@ minetest.register_node("digibuilder:digibuilder", {
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("owner", placer:get_player_name() or "")
-		-- default digiline channel
-		meta:set_string("channel", "digibuilder")
 	end,
 
 	on_construct = function(pos)
@@ -62,6 +60,12 @@ minetest.register_node("digibuilder:digibuilder", {
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
 
+		-- default digiline channel
+		meta:set_string("channel", "digibuilder")
+
+		-- last message
+		meta:set_string("message", "Ready!")
+
 		-- formspec
 		digibuilder.update_formspec(meta)
 	end,
@@ -71,9 +75,7 @@ minetest.register_node("digibuilder:digibuilder", {
 		local inv = meta:get_inventory()
 		local name = player:get_player_name()
 
-		return inv:is_empty("main") and
-			inv:is_empty("upgrade") and
-			not minetest.is_protected(pos, name)
+		return inv:is_empty("main") and not minetest.is_protected(pos, name)
 	end,
 
 	on_timer = function()--pos, elapsed)
@@ -95,8 +97,9 @@ minetest.register_node("digibuilder:digibuilder", {
 		end
 
 
-		if fields.save then
-      print("save")
+		if fields.set_digiline_channel then
+			local meta = minetest.get_meta(pos);
+      meta:set_string("channel", fields.digiline_channel or "")
 		end
 
 	end,
