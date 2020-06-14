@@ -1,4 +1,4 @@
-
+local has_default = minetest.get_modpath("default")
 
 minetest.register_node("digibuilder:digibuilder", {
 	description = "Digibuilder",
@@ -30,7 +30,7 @@ minetest.register_node("digibuilder:digibuilder", {
 		tubedevice_receiver = 1
 	},
 
-	sounds = default.node_sound_glass_defaults(),
+	sounds = has_default and default.node_sound_glass_defaults(),
 
 	digiline = {
 		receptor = {
