@@ -91,20 +91,21 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		-- check if node is buildable to
-		if not node_def.buildable_to then
-			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
-				pos = msg.pos,
-				error = true,
-				message = "Can't build on that position!"
-			})
-			return
-		end
-
 		local is_creative = meta:get_int("creative") == 1
 		local inv = meta:get_inventory()
 
+
 		if not is_creative then
+			-- check if node is buildable to
+			if not node_def.buildable_to then
+				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+					pos = msg.pos,
+					error = true,
+					message = "Can't build on that position!"
+				})
+				return
+			end
+
 			-- check if node is in inventory
 			if not inv:contains_item("main", msg.name) then
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
