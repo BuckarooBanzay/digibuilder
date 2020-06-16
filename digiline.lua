@@ -123,7 +123,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
 				error = true,
-				message = "place node is unknown: '" .. msg.name .. "'"
+				message = "place node is unknown: '" .. (msg.name or "<empty>") .. "'"
 			})
 			return
 		end
@@ -156,12 +156,12 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 
 		-- place node inworld
-		minetest.place_node(absolute_pos, place_node)
+		minetest.log("action", "[digibuilder] " .. owner .. " places node '" ..
+			place_node.name .. "' at " ..
+			minetest.pos_to_string(absolute_pos)
+		)
 
-		if enable_param2 then
-			-- add param2 info
-			minetest.swap_node(absolute_pos, place_node)
-		end
+		minetest.set_node(absolute_pos, place_node)
 
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			pos = msg.pos,
