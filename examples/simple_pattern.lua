@@ -32,8 +32,8 @@ if event.type == "interrupt" then
 		return
 	end
 
-	local char = line[mem.pos]
-	if not char then
+	local char = line:sub(mem.pos, 1)
+	if char == "" then
 		-- next line
 		mem.line = mem.line + 1
 		mem.pos = 1
