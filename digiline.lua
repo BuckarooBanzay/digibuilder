@@ -30,7 +30,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 	end
 
 	if msg.command == "getnode" then
-		-- calculate absoulte position
+		-- calculate absolute position
 		local absolute_pos = vector.add(pos, msg.pos)
 		local node = digibuilder.get_node(absolute_pos)
 
@@ -58,7 +58,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, result)
 
 	elseif msg.command == "setnode" then
-		-- calculate absoulte position
+		-- calculate absolute position
 		local absolute_pos = vector.add(pos, msg.pos)
 		local node = digibuilder.get_node(absolute_pos)
 
