@@ -58,6 +58,24 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, result)
 
 	elseif msg.command == "setnode" then
+		-- set last call time of the command
+		local now = minetest.get_us_time()
+		local previous_time = meta:get_int("lastsetcommand")
+
+		local diff_micros = now - previous_time
+		if diff_micros < (digibuilder.setnode_delay * 1000 * 1000) then
+			-- less than half a second elapsed
+			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+				pos = msg.pos,
+				error = true,
+				message = "setnode called too fast!"
+			})
+			return
+		end
+
+		-- set new lastcommand time
+		meta:set_int("lastsetcommand", now)
+
 		-- calculate absolute position
 		local absolute_pos = vector.add(pos, msg.pos)
 		local node = digibuilder.get_node(absolute_pos)

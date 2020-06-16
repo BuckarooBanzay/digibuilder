@@ -66,6 +66,9 @@ minetest.register_node("digibuilder:digibuilder", {
 		-- last message
 		meta:set_string("message", "Ready!")
 
+		-- last setnode call time
+		meta:set_int("lastsetcommand", 0)
+
 		-- formspec
 		digibuilder.update_formspec(meta)
 	end,

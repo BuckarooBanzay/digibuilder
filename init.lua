@@ -1,6 +1,7 @@
 
 digibuilder = {
   max_radius = tonumber(minetest.settings:get("digibuilder.max_radius")) or 15,
+  setnode_delay = tonumber(minetest.settings:get("digibuilder.setnode_delay")) or 0.5,
 }
 
 local MP = minetest.get_modpath("digibuilder")
