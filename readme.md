@@ -46,6 +46,10 @@ if event.type == "digiline" and event.channel == "digibuilder" then
 end
 ```
 
+# Examples
+
+For code examples for the `luacontroller` see the "examples" directory
+
 # Open issues
 
 * [ ] creative mode

@@ -18,3 +18,14 @@ read_globals = {
 	"mesecons",
 	"default"
 }
+
+files["examples/"] = {
+	globals = {
+		"mem"
+	},
+	read_globals = {
+		"event",
+		"interrupt",
+		"digiline_send"
+	}
+}
