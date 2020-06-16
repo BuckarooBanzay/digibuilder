@@ -61,12 +61,6 @@ minetest.register_node("digibuilder:digibuilder", {
 	end,
 
 	on_construct = function(pos)
-		-- start nodetimer if not started
-		local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(2)
-		end
-
 		-- inventory
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
@@ -93,15 +87,7 @@ minetest.register_node("digibuilder:digibuilder", {
 		return inv:is_empty("main") and not minetest.is_protected(pos, name)
 	end,
 
-	on_timer = function()--pos, elapsed)
-
-		-- restart timer
-		return true
-	end,
-
 	on_receive_fields = function(pos, _, fields, sender)
-		--local meta = minetest.get_meta(pos);
-
 		if not sender then
 			return
 		end
@@ -111,12 +97,10 @@ minetest.register_node("digibuilder:digibuilder", {
 			return
 		end
 
-
 		if fields.set_digiline_channel then
 			local meta = minetest.get_meta(pos);
       meta:set_string("channel", fields.digiline_channel or "")
 		end
-
 	end,
 
 	-- inventory protection
