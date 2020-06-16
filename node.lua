@@ -45,7 +45,19 @@ minetest.register_node("digibuilder:digibuilder", {
 
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		meta:set_string("owner", placer:get_player_name() or "")
+
+		-- set owner
+		local owner = placer:get_player_name() or ""
+		meta:set_string("owner", owner)
+
+		-- creative flag
+		local has_give = minetest.check_player_privs(owner, "give")
+		local has_creative = minetest.check_player_privs(owner, "creative")
+		if has_give or has_creative then
+			meta:set_int("creative", 1)
+		else
+			meta:set_int("creative", 0)
+		end
 	end,
 
 	on_construct = function(pos)

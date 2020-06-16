@@ -101,15 +101,19 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		-- check if node is in inventory
+		local is_creative = meta:get_int("creative") == 1
 		local inv = meta:get_inventory()
-		if not inv:contains_item("main", msg.name) then
-			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
-				pos = msg.pos,
-				error = true,
-				message = "Item not in inventory: " .. msg.name
-			})
-			return
+
+		if not is_creative then
+			-- check if node is in inventory
+			if not inv:contains_item("main", msg.name) then
+				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+					pos = msg.pos,
+					error = true,
+					message = "Item not in inventory: " .. msg.name
+				})
+				return
+			end
 		end
 
 		-- get and validate place node definition
@@ -133,8 +137,10 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		-- remove item
-		inv:remove_item("main", msg.name)
+		if not is_creative then
+			-- remove item
+			inv:remove_item("main", msg.name)
+		end
 
 		local param2 = tonumber(msg.param2)
 		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
