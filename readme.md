@@ -1,17 +1,11 @@
 Minetest digibuilder
 ======
 
+Build nodes with digiline commands
+
 ![](https://github.com/BuckarooBanzay/digibuilder/workflows/luacheck/badge.svg)
 
-
 State: **WIP**
-
-# TODO
-
-* [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
-
-further issues:
-* [ ] Storage of read schematics/buildings
 
 # Settings
 
@@ -51,3 +45,15 @@ if event.type == "digiline" and event.channel == "digibuilder" then
   -- { pos = { x=1, y=0, z=0 }, success = true, name = "stairs:stair_stone", param2 = 3 }
 end
 ```
+
+# Open issues
+
+* [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
+
+further issues:
+* [ ] Storage of read schematics/buildings
+
+
+# License
+
+MIT
