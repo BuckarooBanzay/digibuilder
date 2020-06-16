@@ -48,6 +48,7 @@ end
 
 # Open issues
 
+* [ ] creative mode
 * [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
 
 further issues:
