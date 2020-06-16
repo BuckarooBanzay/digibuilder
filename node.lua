@@ -6,12 +6,12 @@ minetest.register_node("digibuilder:digibuilder", {
 	tiles = {"digibuilder.png"},
 
 	tube = {
-		insert_object = function(pos, _, stack, _)
+		insert_object = function(pos, _, stack)
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
 			return inv:add_item("main", stack)
 		end,
-		can_insert = function(pos, _, stack, _)
+		can_insert = function(pos, _, stack)
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
 			stack = stack:peek_item(1)
