@@ -9,7 +9,6 @@ State: **WIP**
 # TODO
 
 * [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
-* [ ] area display on punch (like in the jumpdrive/protector mod)
 
 further issues:
 * [ ] Storage of read schematics/buildings
