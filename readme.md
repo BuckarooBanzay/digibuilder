@@ -52,7 +52,6 @@ For code examples for the `luacontroller` see the "examples" directory
 
 # Open issues
 
-* [ ] recipe
 * [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
 * [ ] Storage of read schematics/buildings
 
