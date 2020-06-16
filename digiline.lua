@@ -123,6 +123,15 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
+		-- check if "after_place_node" is defined
+		if place_node_def.after_place_node then
+			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+				pos = msg.pos,
+				error = true,
+				message = "can't place complex node: '" .. msg.name .. "'"
+			})
+			return
+		end
 
 		-- remove item
 		inv:remove_item("main", msg.name)
