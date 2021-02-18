@@ -5,12 +5,10 @@ Build nodes with digiline commands
 
 ![](https://github.com/BuckarooBanzay/digibuilder/workflows/luacheck/badge.svg)
 
-State: **WIP**
-
 # Settings
 
-* **digibuilder.max_radius** max radius
-* **digibuilder.setnode_delay** delay between setnode calls in seconds
+* **digibuilder.max_radius** max radius, default: 15 nodes
+* **digibuilder.setnode_delay** delay between setnode calls in seconds, default: 0.5
 
 # Commands
 
@@ -49,11 +47,6 @@ end
 # Examples
 
 For code examples for the `luacontroller` see the "examples" directory
-
-# Open issues
-
-* [ ] `after_place_node(pos, placer, itemstack, pointed_thing)` compat (digtron mod?)
-* [ ] Storage of read schematics/buildings
 
 
 # License

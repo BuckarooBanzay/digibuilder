@@ -35,7 +35,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		local node = digibuilder.get_node(absolute_pos)
 
 		-- get and validate node definition
-		local node_def = minetest.registered_items[node.name]
+		local node_def = minetest.registered_nodes[node.name]
 		if not node_def then
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
@@ -81,7 +81,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		local node = digibuilder.get_node(absolute_pos)
 
 		-- get and validate node definition
-		local node_def = minetest.registered_items[node.name]
+		local node_def = minetest.registered_nodes[node.name]
 		if not node_def then
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
@@ -91,7 +91,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		local is_creative = meta:get_int("creative") == 1
+		local is_creative = minetest.check_player_privs(owner, "creative")
 		local inv = meta:get_inventory()
 
 
@@ -118,7 +118,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 
 		-- get and validate place node definition
-		local place_node_def = minetest.registered_items[msg.name]
+		local place_node_def = minetest.registered_nodes[msg.name]
 		if not place_node_def then
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
@@ -128,21 +128,12 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		-- check if "after_place_node" is defined
-		if place_node_def.after_place_node then
-			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
-				pos = msg.pos,
-				error = true,
-				message = "can't place complex node: '" .. msg.name .. "'"
-			})
-			return
-		end
-
 		if not is_creative then
 			-- remove item
 			inv:remove_item("main", msg.name)
 		end
 
+		-- only allow param2 setting for "facedir" types
 		local param2 = tonumber(msg.param2)
 		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
 
@@ -162,6 +153,27 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		)
 
 		minetest.set_node(absolute_pos, place_node)
+
+		-- check if "after_place_node" is defined
+		if place_node_def.after_place_node then
+			local player = digibuilder.create_fake_player({
+				name = owner
+			})
+
+			local pointed_thing = {}
+			pointed_thing.type = "node"
+			pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+			pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y - 1, z=absolute_pos.z}
+
+			local itemstack = ItemStack()
+
+			place_node_def.after_place_node(absolute_pos, player, itemstack, pointed_thing)
+		end
+
+		-- check if the node is falling
+		if place_node_def.groups.falling_node then
+			minetest.check_for_falling(absolute_pos)
+		end
 
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			pos = msg.pos,
