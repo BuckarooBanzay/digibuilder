@@ -5,6 +5,8 @@ Build nodes with digiline commands
 
 ![](https://github.com/BuckarooBanzay/digibuilder/workflows/luacheck/badge.svg)
 
+<img src="./screenshot.png"/>
+
 # Settings
 
 * **digibuilder.max_radius** max radius, default: 15 nodes
@@ -51,4 +53,5 @@ For code examples for the `luacontroller` see the "examples" directory
 
 # License
 
-MIT
+* Code: MIT
+* Textures: CC-BY-SA 3.0
