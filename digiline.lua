@@ -118,12 +118,22 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 
 		-- get and validate place node definition
-		local place_node_def = minetest.registered_nodes[msg.name]
+		local place_node_def = minetest.registered_items[msg.name]
 		if not place_node_def then
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
 				error = true,
 				message = "place node is unknown: '" .. (msg.name or "<empty>") .. "'"
+			})
+			return
+		end
+
+		if not place_node_def.on_place then
+			-- can't place node
+			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+				pos = msg.pos,
+				error = true,
+				message = "node can't be placed: '" .. msg.name .. "'"
 			})
 			return
 		end
@@ -134,7 +144,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 
 		-- only allow param2 setting for "facedir" types
-		local param2 = tonumber(msg.param2)
+		local param2 = tonumber(msg.param2) or 0
 		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
 
 		local place_node = {
@@ -152,22 +162,37 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			minetest.pos_to_string(absolute_pos)
 		)
 
-		minetest.set_node(absolute_pos, place_node)
+		-- create fake player for certain function arguments (after_place_node, etc)
+		local player = digibuilder.create_fake_player({
+			name = owner
+		})
+
+		-- see:
+		-- https://github.com/minetest-mods/digtron/blob/843dbd227658a93ee4df791bfdd3d136ee7adf85/util_item_place_node.lua
+		local pointed_thing = {}
+		pointed_thing.type = "node"
+		pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+
+		if place_node_def.paramtype2 == "facedir" then
+			pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
+		elseif place_node_def.paramtype2 == "wallmounted" then
+			pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
+		end
+
+		local itemstack = ItemStack(msg.name .. " 1")
+		local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
+		if returnstack and returnstack:get_count() < itemstack:get_count() then success = true end
+
+		if success then
+			local placed_node = minetest.get_node(absolute_pos)
+			placed_node.param2 = param2
+			minetest.set_node(absolute_pos, placed_node)
+		end
 
 		-- check if "after_place_node" is defined
 		if place_node_def.after_place_node then
-			local player = digibuilder.create_fake_player({
-				name = owner
-			})
-
-			local pointed_thing = {}
-			pointed_thing.type = "node"
-			pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
-			pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y - 1, z=absolute_pos.z}
-
-			local itemstack = ItemStack()
-
-			place_node_def.after_place_node(absolute_pos, player, itemstack, pointed_thing)
+			place_node_def.after_place_node(absolute_pos, player, ItemStack(), pointed_thing)
 		end
 
 		-- check if the node is falling
