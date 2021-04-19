@@ -171,9 +171,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 
 		-- check if the node is falling
-		if place_node_def.groups.falling_node then
-			minetest.check_for_falling(absolute_pos)
-		end
+		minetest.check_for_falling(absolute_pos)
 
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			pos = msg.pos,
