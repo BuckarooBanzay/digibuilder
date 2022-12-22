@@ -14,3 +14,7 @@ dofile(MP.."/digiline_validate_pos.lua")
 dofile(MP.."/digiline.lua")
 dofile(MP.."/node.lua")
 dofile(MP.."/recipe.lua")
+
+if minetest.get_modpath("mtt") and mtt.enabled then
+  dofile(MP.."/mtt.lua")
+end

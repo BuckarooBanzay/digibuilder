@@ -90,7 +90,7 @@ minetest.register_node("digibuilder:digibuilder", {
 
 		if fields.set_digiline_channel then
 			local meta = minetest.get_meta(pos);
-      meta:set_string("channel", fields.digiline_channel or "")
+			meta:set_string("channel", fields.digiline_channel or "")
 		end
 	end,
 

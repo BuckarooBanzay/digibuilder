@@ -16,7 +16,8 @@ read_globals = {
 	-- Deps
 	"digilines",
 	"mesecons",
-	"default"
+	"default",
+	"mtt"
 }
 
 files["examples/"] = {
