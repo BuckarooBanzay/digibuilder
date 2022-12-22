@@ -6,6 +6,7 @@ local neighbor_pos = { x=1, y=100, z=0 }
 mtt.emerge_area(builder_pos, builder_pos)
 
 -- debugging
+--[[
 local old_send = digilines.receptor_send
 function digilines.receptor_send(pos, rules, channel, msg)
     print(dump({
@@ -16,6 +17,7 @@ function digilines.receptor_send(pos, rules, channel, msg)
     }))
     return old_send(pos, rules, channel, msg)
 end
+--]]
 
 mtt.register("build", function(callback)
 
@@ -49,15 +51,18 @@ mtt.register("build", function(callback)
     local inv = meta:get_inventory()
     inv:add_item("main", "default:mese 1")
 
-    -- send command
-    digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
-        command = "setnode",
-        pos = { x=0, y=1, z=0 },
-        name = "default:mese"
-    })
+    -- schedule next command a second later to not trigger the "too fast" error
+    minetest.after(1, function()
+        -- send command
+        digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
+            command = "setnode",
+            pos = { x=0, y=1, z=0 },
+            name = "default:mese"
+        })
 
-    -- mese block was built
-    assert(minetest.get_node(build_pos).name == "default:mese")
+        -- mese block was built
+        assert(minetest.get_node(build_pos).name == "default:mese")
 
-    callback()
+        callback()
+    end)
 end)
