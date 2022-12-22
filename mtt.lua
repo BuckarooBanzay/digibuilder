@@ -6,7 +6,6 @@ local neighbor_pos = { x=1, y=100, z=0 }
 mtt.emerge_area(builder_pos, builder_pos)
 
 -- debugging
---[[
 local old_send = digilines.receptor_send
 function digilines.receptor_send(pos, rules, channel, msg)
     print(dump({
@@ -17,7 +16,6 @@ function digilines.receptor_send(pos, rules, channel, msg)
     }))
     return old_send(pos, rules, channel, msg)
 end
---]]
 
 mtt.register("build", function(callback)
 
