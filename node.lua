@@ -71,7 +71,7 @@ minetest.register_node("digibuilder:digibuilder", {
 	end,
 
 	can_dig = function(pos,player)
-		local meta = minetest.get_meta(pos);
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		local name = player:get_player_name()
 
@@ -92,6 +92,10 @@ minetest.register_node("digibuilder:digibuilder", {
 			local meta = minetest.get_meta(pos);
 			meta:set_string("channel", fields.digiline_channel or "")
 		end
+
+		-- update formspec
+		local meta = minetest.get_meta(pos)
+		digibuilder.update_formspec(meta)
 	end,
 
 	-- inventory protection
