@@ -117,7 +117,5 @@ minetest.register_node("digibuilder:digibuilder", {
 		return stack:get_count()
 	end,
 
-	on_punch = function(pos)
-		digibuilder.show_marker(pos, digibuilder.max_radius)
-	end
+	on_punch = digibuilder.show_marker,
 })
