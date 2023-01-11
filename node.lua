@@ -1,4 +1,12 @@
+
 local has_default = minetest.get_modpath("default")
+
+local formspec = "size[8,9.2;]" ..
+	"list[context;main;0,0;8,4;]" ..
+	"field[1.3,4.6;4.25,1;channel;Digiline Channel;${channel}]" ..
+	"button_exit[5,4.28;2,1;set_channel;Set]" ..
+	"list[current_player;main;0,5.4;8,4;]" ..
+	"listring[]"
 
 minetest.register_node("digibuilder:digibuilder", {
 	description = "Digibuilder",
@@ -57,17 +65,10 @@ minetest.register_node("digibuilder:digibuilder", {
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
 
-		-- default digiline channel
+		-- metadata
+		meta:set_string("formspec", formspec)
 		meta:set_string("channel", "digibuilder")
-
-		-- last message
-		meta:set_string("message", "Ready!")
-
-		-- last setnode call time
-		meta:set_int("lastsetcommand", 0)
-
-		-- formspec
-		digibuilder.update_formspec(meta)
+		meta:set_string("infotext", "Digibuilder")
 	end,
 
 	can_dig = function(pos,player)
@@ -79,23 +80,20 @@ minetest.register_node("digibuilder:digibuilder", {
 	end,
 
 	on_receive_fields = function(pos, _, fields, sender)
-		if not sender then
+		if not sender or minetest.is_protected(pos, sender:get_player_name()) then
 			return
 		end
 
-		if minetest.is_protected(pos, sender:get_player_name()) then
-			-- not allowed
-			return
+		if fields.set_channel then
+			local meta = minetest.get_meta(pos)
+			meta:set_string("channel", fields.channel)
 		end
 
-		if fields.set_digiline_channel then
-			local meta = minetest.get_meta(pos);
-			meta:set_string("channel", fields.digiline_channel or "")
+		if fields.digiline_channel then
+			-- Update old formspec
+			local meta = minetest.get_meta(pos)
+			meta:set_string("formspec", formspec)
 		end
-
-		-- update formspec
-		local meta = minetest.get_meta(pos)
-		digibuilder.update_formspec(meta)
 	end,
 
 	-- inventory protection
