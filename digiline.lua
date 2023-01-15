@@ -101,7 +101,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
-					message = "Can't build on that position!"
+					message = "Can't build at that position!"
 				})
 				return
 			end
