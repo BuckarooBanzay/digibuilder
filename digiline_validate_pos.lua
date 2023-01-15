@@ -16,7 +16,7 @@ function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
 	if not x or not y or not z then
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			error = true,
-			message = "'pos' is has invalid x/y/z fields!"
+			message = "'pos' has invalid x/y/z fields!"
 		})
 		return false
 	end
