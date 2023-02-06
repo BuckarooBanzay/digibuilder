@@ -154,6 +154,9 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		if enable_param2 then
 			-- place with param2 info
 			place_node.param2 = param2
+		else
+			-- set default param2
+			param2 = 0
 		end
 
 		-- place node inworld
