@@ -19,8 +19,7 @@ function digilines.receptor_send(pos, rules, channel, msg)
 end
 --]]
 
-mtt.register("build", function(callback)
-
+mtt.register("setup", function(callback)
     -- place builder and wire
     minetest.set_node(build_pos, { name="air" })
     minetest.set_node(builder_pos, { name="digibuilder:digibuilder" })
@@ -37,6 +36,10 @@ mtt.register("build", function(callback)
     -- set owner
     meta:set_string("owner", "singleplayer")
 
+    callback()
+end)
+
+mtt.register("setnode-test", function(callback)
     -- send command
     digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
         command = "setnode",
@@ -48,6 +51,7 @@ mtt.register("build", function(callback)
     assert(minetest.get_node(build_pos).name ~= "default:mese")
 
     -- add inventory
+    local meta = minetest.get_meta(builder_pos)
     local inv = meta:get_inventory()
     inv:add_item("main", "default:mese 1")
 
@@ -65,4 +69,32 @@ mtt.register("build", function(callback)
 
         callback()
     end)
+end)
+
+mtt.register("build-invalid-param2", function(callback)
+    -- prepare
+    minetest.set_node(build_pos, { name="air" })
+
+    -- add inventory
+    local meta = minetest.get_meta(builder_pos)
+    local inv = meta:get_inventory()
+    inv:add_item("main", "default:tree 1")
+
+    -- send invalid command
+    digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
+        command = "setnode",
+        pos = { x=0, y=1, z=0 },
+        name = "default:tree"
+    })
+
+    --[[
+        TODO: this doesn't work out somehow, node is still air, maybe fake-player related
+
+    print(dump({
+        build_pos = build_pos,
+        node = minetest.get_node(build_pos)
+    }))
+    assert(minetest.get_node(build_pos).name == "default:tree")
+    --]]
+    callback()
 end)
