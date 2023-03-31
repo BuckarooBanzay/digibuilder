@@ -27,7 +27,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 	if msg.error then
 		return
 	end
-	
+
 	-- validate position
 	local owner = meta:get_string("owner")
 	if not digibuilder.digiline_validate_pos(pos, owner, set_channel, msg) then
