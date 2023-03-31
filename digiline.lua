@@ -11,20 +11,19 @@ end
 
 function digibuilder.digiline_effector(pos, _, channel, msg)
 
-	local msgt = type(msg)
-	if msgt ~= "table" then
-		return
-	end
-
-	local meta = minetest.get_meta(pos)
-
-	local set_channel = meta:get_string("channel")
-	if channel ~= set_channel then
+	-- only allow table message types
+	if type(msg) ~= "table" then
 		return
 	end
 
 	-- avoid infinitive loops when multiple builders have same channel and are emitting errors
 	if msg.error then
+		return
+	end
+
+	local meta = minetest.get_meta(pos)
+	local set_channel = meta:get_string("channel")
+	if channel ~= set_channel then
 		return
 	end
 
