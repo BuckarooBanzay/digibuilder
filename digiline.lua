@@ -187,15 +187,12 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
 		end
 
-		local itemstack = ItemStack(msg.name .. " 1")
-		local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
-		if returnstack and returnstack:get_count() < itemstack:get_count() then success = true end
-
-		if success then
-			local placed_node = minetest.get_node(absolute_pos)
-			placed_node.param2 = param2
-			minetest.set_node(absolute_pos, placed_node)
+		if place_node_def.place_param2 ~= nil then
+			-- use predefined param2
+			place_node.param2 = place_node_def.place_param2
 		end
+
+		minetest.set_node(absolute_pos, place_node)
 
 		-- check if "after_place_node" is defined
 		if place_node_def.after_place_node then
