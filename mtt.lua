@@ -98,3 +98,8 @@ mtt.register("build-invalid-param2", function(callback)
     --]]
     callback()
 end)
+
+mtt.register("place-crop", function(callback)
+    -- TODO
+    callback()
+end)

@@ -179,7 +179,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		local pointed_thing = {}
 		pointed_thing.type = "node"
 		pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
-		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y-1, z=absolute_pos.z}
 
 		if place_node_def.paramtype2 == "facedir" then
 			pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
@@ -192,7 +192,25 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			place_node.param2 = place_node_def.place_param2
 		end
 
-		minetest.set_node(absolute_pos, place_node)
+		if place_node_def.on_place ~= minetest.item_place then
+			-- non-default item placement, use custom function (crops, other items)
+			local itemstack = ItemStack(msg.name .. " 1")
+			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
+			if returnstack and returnstack:get_count() < itemstack:get_count() then
+				success = true
+			end
+			if not success then
+				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+					pos = msg.pos,
+					error = true,
+					message = "item placement failed: '" .. msg.name .. "'"
+				})
+				return
+			end
+		else
+			-- default on_place, use `set_node` to avoid side-effects (on-place rotations)
+			minetest.set_node(absolute_pos, place_node)
+		end
 
 		-- check if "after_place_node" is defined
 		if place_node_def.after_place_node then
