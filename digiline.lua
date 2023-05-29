@@ -183,12 +183,19 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		local pointed_thing = {}
 		pointed_thing.type = "node"
 		pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
-		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y-1, z=absolute_pos.z}
-
-		if place_node_def.paramtype2 == "facedir" then
-			pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
-		elseif place_node_def.paramtype2 == "wallmounted" then
-			pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
+		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+		if msg.up == true then
+			pointed_thing.under.y = absolute_pos.y + 1
+		elseif msg.down == true then
+			pointed_thing.under.y = absolute_pos.y - 1
+		elseif msg.west == true then
+			pointed_thing.under.x = absolute_pos.x - 1
+		elseif msg.east == true then
+			pointed_thing.under.x = absolute_pos.x + 1
+		elseif msg.south == true then
+			pointed_thing.under.z = absolute_pos.z - 1
+		elseif msg.north == true then
+			pointed_thing.under.z = absolute_pos.z + 1
 		end
 
 		if place_node_def.place_param2 ~= nil then
