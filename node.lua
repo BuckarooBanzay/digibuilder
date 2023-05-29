@@ -1,5 +1,9 @@
 
 local has_default = minetest.get_modpath("default")
+local has_pipeworks = minetest.get_modpath("pipeworks")
+
+local tube_entry = has_pipeworks and "^pipeworks_tube_connection_wooden.png" or ""
+												--stony.png" --_metallic.png"
 
 local formspec = "size[8,9.2;]" ..
 	"list[context;main;0,0;8,4;]" ..
@@ -11,7 +15,7 @@ local formspec = "size[8,9.2;]" ..
 minetest.register_node("digibuilder:digibuilder", {
 	description = "Digibuilder",
 
-	tiles = {"digibuilder.png"},
+	tiles = {"digibuilder.png" .. tube_entry},
 
 	tube = {
 		insert_object = function(pos, _, stack)
@@ -27,7 +31,10 @@ minetest.register_node("digibuilder:digibuilder", {
 			return inv:room_for_item("main", stack)
 		end,
 		input_inventory = "main",
-		connect_sides = {bottom = 1}
+		connect_sides = {
+			left = 1, back = 1, top = 1,
+			right = 1, front = 1, bottom = 1
+		}
 	},
 
 	light_source = 13,
@@ -57,6 +64,10 @@ minetest.register_node("digibuilder:digibuilder", {
 		-- set owner
 		local owner = placer:get_player_name() or ""
 		meta:set_string("owner", owner)
+
+		if has_pipeworks then
+			pipeworks.after_place(pos)
+		end
 	end,
 
 	on_construct = function(pos)
@@ -77,6 +88,12 @@ minetest.register_node("digibuilder:digibuilder", {
 		local name = player:get_player_name()
 
 		return inv:is_empty("main") and not minetest.is_protected(pos, name)
+	end,
+
+	after_dig_node = function(pos)
+		if has_pipeworks then
+			pipeworks.after_dig(pos)
+		end
 	end,
 
 	on_receive_fields = function(pos, _, fields, sender)
