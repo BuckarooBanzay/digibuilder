@@ -120,6 +120,9 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			end
 
 			-- check if node is in inventory
+			-- this check does not work for items like technic:water_can
+			-- it may be in inventory but empty. Using an empty can with
+			-- digibuilder destroys it!
 			if not inv:contains_item("main", msg.name) then
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
@@ -207,6 +210,8 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			-- non-default item placement, use custom function (crops, other items)
 			-- taking an actual item instead of creating a new stack,
 			-- raises the chances that we get something useful
+			-- TODO: search for best match e.g. full can instead of empty one
+			--local inv_list = inv:get_list("main")
 			local itemstack = inv:remove_item("main", msg.name)
 			if is_creative and itemstack:is_empty() then
 				itemstack = ItemStack(msg.name .. " 1")
