@@ -180,7 +180,7 @@ print('param2 enabled: '..param2)
 		else
 print('param2 disabled')
 			-- set default param2
-			param2 = 0
+			place_node.param2 = 0
 		end
 
 		-- place node inworld
@@ -243,7 +243,8 @@ print('wear after: '.. returnstack:get_wear())
 					or returnstack:get_count() < itemstack:get_count() then
 						success = true
 				end
-print('used ' .. msg.name .. ', returned: >' .. returnstack:to_string() .. '< c ' .. returnstack:get_count() .. ' }' .. itemstack:to_string())
+print('used ' .. msg.name .. ', returned: >' .. returnstack:to_string()
+.. '< c ' .. returnstack:get_count() .. ' }' .. itemstack:to_string())
 			end
 			if not success then
 print('no success')
@@ -301,3 +302,4 @@ print('target is now: '.. dump(digibuilder.get_node(absolute_pos)))
 		})
 	end
 end
+
