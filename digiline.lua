@@ -151,11 +151,6 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		if not is_creative then
-			-- remove item
-			inv:remove_item("main", msg.name)
-		end
-
 		-- only allow param2 setting for "facedir" types
 		local param2 = tonumber(msg.param2) or 0
 		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
