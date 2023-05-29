@@ -205,7 +205,12 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 
 		if place_node_def.on_place ~= minetest.item_place then
 			-- non-default item placement, use custom function (crops, other items)
-			local itemstack = ItemStack(msg.name .. " 1")
+			-- taking an actual item instead of creating a new stack,
+			-- raises the chances that we get something useful
+			local itemstack = inv:remove_item("main", msg.name)
+			if is_creative and itemstack:is_empty() then
+				itemstack = ItemStack(msg.name .. " 1")
+			end
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
 			if returnstack and returnstack:get_count() < itemstack:get_count() then
 				success = true
