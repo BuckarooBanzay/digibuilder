@@ -9,6 +9,15 @@ function digibuilder.get_node(pos)
 	return node
 end
 
+local function return_stack(pos, inv, stack)
+	if stack:is_empty() then return end
+	local overflow_stack = inv:add_item("main", stack)
+	if not overflow_stack:is_empty() then
+		-- TODO: discuss if items should be dropped at absolute_pos or pos
+		minetest.add_item(pos, overflow_stack)
+	end
+end
+
 function digibuilder.digiline_effector(pos, _, channel, msg)
 
 	-- only allow table message types
