@@ -212,10 +212,19 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 				itemstack = ItemStack(msg.name .. " 1")
 			end
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
-			if returnstack and returnstack:get_count() < itemstack:get_count() then
-				success = true
+			if returnstack then
+				return_stack(pos, inv, returnstack)
+				if returnstack:get_wear() ~= itemstack:get_wear()
+					or returnstack:get_name() ~= itemstack:get_name()
+					or returnstack:get_count() < itemstack:get_count() then
+						success = true
+				end
 			end
 			if not success then
+				if not returnstack then
+					-- some items aren't placed but don't return a stack
+					return_stack(pos, inv, itemstack)
+				end
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
@@ -226,6 +235,9 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		else
 			-- default on_place, use `set_node` to avoid side-effects (on-place rotations)
 			minetest.set_node(absolute_pos, place_node)
+			if not is_creative then
+				inv:remove_item("main", msg.name)
+			end
 		end
 
 		-- check if "after_place_node" is defined
