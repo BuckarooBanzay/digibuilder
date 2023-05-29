@@ -248,6 +248,18 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		-- check if the node is falling
 		minetest.check_for_falling(absolute_pos)
 
+		-- checking if param2 actually is what was requested
+		if enable_param2 then
+			local check_node = digibuilder.get_node(absolute_pos)
+			if check_node.name ~= msg.name then
+				-- this is not always a bad sign, certain nodes change their name (or fall)
+				-- also itemname and nodename don't always match
+			elseif check_node.param2 ~= place_node.param2 then
+				-- enforce param2
+				minetest.swap_node(absolute_pos, place_node)
+			end
+		end
+
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			pos = msg.pos,
 			name = place_node.name,
