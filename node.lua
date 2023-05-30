@@ -90,11 +90,7 @@ minetest.register_node("digibuilder:digibuilder", {
 		return inv:is_empty("main") and not minetest.is_protected(pos, name)
 	end,
 
-	after_dig_node = function(pos)
-		if has_pipeworks then
-			pipeworks.after_dig(pos)
-		end
-	end,
+	after_dig_node = has_pipeworks and pipeworks.after_dig or nil,
 
 	on_receive_fields = function(pos, _, fields, sender)
 		if not sender or minetest.is_protected(pos, sender:get_player_name()) then
