@@ -214,7 +214,11 @@ print('param2 disabled')
 			pointed_thing.under.z = absolute_pos.z + 1
 		else
 			pointed_thing.under.y = absolute_pos.y - 1
-			
+			if place_node_def.paramtype2 == "facedir" then
+				pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
+			elseif place_node_def.paramtype2 == "wallmounted" then
+				pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
+			end
 		end
 
 		if place_node_def.place_param2 ~= nil then
