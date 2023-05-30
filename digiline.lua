@@ -212,6 +212,9 @@ print('param2 disabled')
 			pointed_thing.under.z = absolute_pos.z - 1
 		elseif msg.north == true then
 			pointed_thing.under.z = absolute_pos.z + 1
+		else
+			pointed_thing.under.y = absolute_pos.y - 1
+			
 		end
 
 		if place_node_def.place_param2 ~= nil then
