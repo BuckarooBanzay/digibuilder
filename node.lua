@@ -2,9 +2,6 @@
 local has_default = minetest.get_modpath("default")
 local has_pipeworks = minetest.get_modpath("pipeworks")
 
-local tube_entry = has_pipeworks and "^pipeworks_tube_connection_wooden.png" or ""
-												--stony.png" --_metallic.png"
-
 local formspec = "size[8,9.2;]" ..
 	"list[context;main;0,0;8,4;]" ..
 	"field[1.3,4.6;4.25,1;channel;Digiline Channel;${channel}]" ..
@@ -15,7 +12,7 @@ local formspec = "size[8,9.2;]" ..
 minetest.register_node("digibuilder:digibuilder", {
 	description = "Digibuilder",
 
-	tiles = {"digibuilder.png" .. tube_entry},
+	tiles = {"digibuilder.png"},
 
 	tube = {
 		insert_object = function(pos, _, stack)
