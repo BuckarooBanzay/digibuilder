@@ -247,6 +247,7 @@ print('param2 disabled')
 			pointed_thing.under.z = absolute_pos.z + 1
 		elseif msg.neutral == true then
 			-- nothing to do
+			pointed_thing = pointed_thing
 		else
 			pointed_thing.under.y = absolute_pos.y - 1
 			if place_node_def.paramtype2 == "facedir" then
