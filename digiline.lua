@@ -9,6 +9,36 @@ function digibuilder.get_node(pos)
 	return node
 end
 
+-- looks for index of item to pass to fake player
+-- while doing so, might as well look for best stack/item
+local function best_inventory_index(inv, itemname)
+	if not inv:contains_item("main", itemname) then
+		return nil
+	end
+
+	local best_stack, best_index, stack
+	local list = inv:get_list("main")
+	local index = #list
+	repeat
+		stack = list[index]
+		if not stack:is_empty() then
+			if itemname == stack:get_name() then
+				if not best_stack then
+					best_stack = stack
+					best_index = index
+				elseif (best_stack:get_wear() == 0 and stack:get_wear() > 0)
+					or (best_stack:get_wear() > stack:get_wear() and stack:get_wear() > 0) then
+					best_stack = stack
+					best_index = index
+				end
+			end
+		end
+		index = index - 1
+	until index == 0
+	return best_index
+end
+
+-- deals with returned stacks
 local function return_stack(pos, inv, stack)
 	if stack:is_empty() then return end
 	local overflow_stack = inv:add_item("main", stack)
@@ -107,7 +137,7 @@ print('target: ' .. node.name)
 
 		local is_creative = minetest.check_player_privs(owner, "creative")
 		local inv = meta:get_inventory()
-
+		local inv_best_index = best_inventory_index(inv, msg.name)
 
 		if not is_creative then
 print('not creative')
@@ -126,7 +156,7 @@ print('target not buildable_to')
 			-- this check does not work for items like technic:water_can
 			-- it may be in inventory but empty. Using an empty can with
 			-- digibuilder destroys it!
-			if not inv:contains_item("main", msg.name) then
+			if not inv_best_index then
 print('item not in inventory')
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
@@ -191,7 +221,10 @@ print('param2 disabled')
 
 		-- create fake player for certain function arguments (after_place_node, etc)
 		local player = digibuilder.create_fake_player({
-			name = owner
+			name = owner,
+			inventory = inv,
+			wield_list = "main",
+			wield_index = inv_best_index
 		})
 
 		-- see:
@@ -234,13 +267,14 @@ print('non default item placement')
 			-- non-default item placement, use custom function (crops, other items)
 			-- taking an actual item instead of creating a new stack,
 			-- raises the chances that we get something useful
-			-- TODO: search for best match e.g. full can instead of empty one
-			--local inv_list = inv:get_list("main")
---print(dump(inv_list))
-			local itemstack = inv:remove_item("main", msg.name)
-print('wear '..itemstack:get_wear())
-			if is_creative and itemstack:is_empty() then
+			local itemstack
+			if is_creative and inv_best_index == nil then
 				itemstack = ItemStack(msg.name .. " 1")
+			else
+				-- get a copy (with metadata)
+				itemstack = inv:get_stack("main", inv_best_index)
+				-- delete slot
+				inv:set_stack("main", inv_best_index, ItemStack("")) --inv:remove_item("main", msg.name)
 			end
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
 print('>'..dump(returnstack and returnstack:to_string() or 'nil')..'<>'..dump(success)..'<')
