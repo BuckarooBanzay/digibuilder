@@ -213,6 +213,11 @@ print('param2 disabled')
 			place_node.param2 = 0
 		end
 
+		if place_node_def.place_param2 ~= nil then
+			-- use predefined param2
+			place_node.param2 = place_node_def.place_param2
+		end
+
 		-- place node inworld
 		minetest.log("action", "[digibuilder] " .. owner .. " places node '" ..
 			place_node.name .. "' at " ..
@@ -281,12 +286,6 @@ print('param2 disabled')
 			else
 				pointed_thing.under.y = absolute_pos.y - 1
 			end
-		end
-
-		if place_node_def.place_param2 ~= nil then
-print('using predefined param2')
-			-- use predefined param2
-			place_node.param2 = place_node_def.place_param2
 		end
 
 		if place_node_def.on_place ~= minetest.item_place then
