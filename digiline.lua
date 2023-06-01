@@ -35,6 +35,7 @@ local function best_inventory_index(inv, itemname)
 		end
 		index = index - 1
 	until index == 0
+print('best index: >>'..dump(best_index)..'<<')
 	return best_index
 end
 
@@ -214,6 +215,7 @@ print('param2 disabled')
 		end
 
 		if place_node_def.place_param2 ~= nil then
+print('using predefined param2')
 			-- use predefined param2
 			place_node.param2 = place_node_def.place_param2
 		end
@@ -293,6 +295,7 @@ print('non default item placement')
 			-- non-default item placement, use custom function (crops, other items)
 			-- taking an actual item instead of creating a new stack,
 			-- raises the chances that we get something useful
+print('best index>'..dump(inv_best_index)..'<')
 			local itemstack
 			if is_creative and inv_best_index == nil then
 				itemstack = ItemStack(msg.name .. " 1")
@@ -302,6 +305,7 @@ print('non default item placement')
 				-- delete slot
 				inv:set_stack("main", inv_best_index, ItemStack("")) --inv:remove_item("main", msg.name)
 			end
+print('wear '..itemstack:get_wear())
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
 print('>'..dump(returnstack and returnstack:to_string() or 'nil')..'<>'..dump(success)..'<')
 			if returnstack then
