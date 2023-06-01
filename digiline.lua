@@ -330,10 +330,10 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		-- checking if param2 actually is what was requested
 		if enable_param2 then
 			local check_node = digibuilder.get_node(absolute_pos)
-			if check_node.name ~= msg.name then
-				-- this is not always a bad sign, certain nodes change their name (or fall)
-				-- also itemname and nodename don't always match
-			elseif check_node.param2 ~= place_node.param2 then
+			-- it is not always a bad sign when name of placed node does
+			-- not match itemname, certain nodes change their name (or fall)
+			-- also itemname and nodename don't always match
+			if check_node.name == msg.name and check_node.param2 ~= place_node.param2 then
 				-- enforce param2
 				minetest.swap_node(absolute_pos, place_node)
 			end
