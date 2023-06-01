@@ -259,6 +259,8 @@ print('param2 disabled')
 		pointed_thing.type = "node"
 		pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
 		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+		-- Note: it is intentional that the default is a
+		-- neutral (non-directional) pointed_thing
 		if msg.up == true then
 			pointed_thing.under.y = absolute_pos.y + 1
 		elseif msg.down == true then
@@ -271,15 +273,13 @@ print('param2 disabled')
 			pointed_thing.under.z = absolute_pos.z - 1
 		elseif msg.north == true then
 			pointed_thing.under.z = absolute_pos.z + 1
-		elseif msg.neutral == true then
-			-- nothing to do
-			pointed_thing = pointed_thing
-		else
-			pointed_thing.under.y = absolute_pos.y - 1
+		elseif msg.auto == true then
 			if place_node_def.paramtype2 == "facedir" then
-				pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
+				pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(place_node.param2))
 			elseif place_node_def.paramtype2 == "wallmounted" then
-				pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
+				pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(place_node.param2))
+			else
+				pointed_thing.under.y = absolute_pos.y - 1
 			end
 		end
 
