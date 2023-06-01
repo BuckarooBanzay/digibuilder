@@ -219,12 +219,38 @@ print('param2 disabled')
 			minetest.pos_to_string(absolute_pos)
 		)
 
+		local dir = minetest.facedir_to_dir(place_node.param2)
+		local pitch
+		local yaw
+		if dir.z < 0 then
+			yaw = 0
+			pitch = 0
+		elseif dir.z > 0 then
+			yaw = math.pi
+			pitch = 0
+		elseif dir.x < 0 then
+			yaw = 3*math.pi/2
+			pitch = 0
+		elseif dir.x > 0 then
+			yaw = math.pi/2
+			pitch = 0
+		elseif dir.y > 0 then
+			yaw = 0
+			pitch = -math.pi/2
+		else
+			yaw = 0
+			pitch = math.pi/2
+		end
 		-- create fake player for certain function arguments (after_place_node, etc)
 		local player = digibuilder.create_fake_player({
 			name = owner,
 			inventory = inv,
 			wield_list = "main",
-			wield_index = inv_best_index
+			wield_index = inv_best_index,
+			position = vector.subtract(absolute_pos, vector.new(0, 1.5, 0)),
+			look_dir = vector.multiply(dir, -1),
+			look_pitch = pitch,
+			look_yaw = yaw
 		})
 
 		-- see:
