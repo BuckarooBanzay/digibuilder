@@ -1,5 +1,6 @@
 
 local has_default = minetest.get_modpath("default")
+local has_pipeworks = minetest.get_modpath("pipeworks")
 
 local formspec = "size[8,9.2;]" ..
 	"list[context;main;0,0;8,4;]" ..
@@ -27,7 +28,10 @@ minetest.register_node("digibuilder:digibuilder", {
 			return inv:room_for_item("main", stack)
 		end,
 		input_inventory = "main",
-		connect_sides = {bottom = 1}
+		connect_sides = {
+			left = 1, back = 1, top = 1,
+			right = 1, front = 1, bottom = 1
+		}
 	},
 
 	light_source = 13,
@@ -57,6 +61,10 @@ minetest.register_node("digibuilder:digibuilder", {
 		-- set owner
 		local owner = placer:get_player_name() or ""
 		meta:set_string("owner", owner)
+
+		if has_pipeworks then
+			pipeworks.after_place(pos)
+		end
 	end,
 
 	on_construct = function(pos)
@@ -78,6 +86,8 @@ minetest.register_node("digibuilder:digibuilder", {
 
 		return inv:is_empty("main") and not minetest.is_protected(pos, name)
 	end,
+
+	after_dig_node = has_pipeworks and pipeworks.after_dig or nil,
 
 	on_receive_fields = function(pos, _, fields, sender)
 		if not sender or minetest.is_protected(pos, sender:get_player_name()) then

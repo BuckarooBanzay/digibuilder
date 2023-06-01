@@ -15,6 +15,7 @@ read_globals = {
 
 	-- Deps
 	"digilines",
+	"pipeworks",
 	"mesecons",
 	"default",
 	"mtt"
