@@ -35,7 +35,7 @@ local function best_inventory_index(inv, itemname)
 		end
 		index = index - 1
 	until index == 0
-print('best index: >>'..dump(best_index)..'<<')
+
 	return best_index
 end
 
@@ -67,7 +67,6 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		return
 	end
 
-print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 	-- validate position
 	local owner = meta:get_string("owner")
 	if not digibuilder.digiline_validate_pos(pos, owner, set_channel, msg) then
@@ -124,7 +123,7 @@ print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 		-- calculate absolute position
 		local absolute_pos = vector.add(pos, msg.pos)
 		local node = digibuilder.get_node(absolute_pos)
-print('target: ' .. node.name)
+
 		-- get and validate node definition
 		local node_def = minetest.registered_nodes[node.name]
 		if not node_def then
@@ -141,10 +140,8 @@ print('target: ' .. node.name)
 		local inv_best_index = best_inventory_index(inv, msg.name)
 
 		if not is_creative then
-print('not creative')
 			-- check if node is buildable to
 			if not node_def.buildable_to then
-print('target not buildable_to')
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
@@ -158,7 +155,6 @@ print('target not buildable_to')
 			-- it may be in inventory but empty. Using an empty can with
 			-- digibuilder destroys it!
 			if not inv_best_index then
-print('item not in inventory')
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
@@ -167,13 +163,7 @@ print('item not in inventory')
 				return
 			end
 		end
---[[
-for n,d in pairs(minetest.registered_items) do
-	if d.paramtype2 == 'wallmounted' then
-		print(n)
-	end
-end
---]]
+
 		-- get and validate place node definition
 		local place_node_def = minetest.registered_items[msg.name]
 		if not place_node_def then
@@ -186,7 +176,6 @@ end
 		end
 
 		if not place_node_def.on_place then
-print('place_node_def does not have on_place')
 			-- can't place node
 			digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 				pos = msg.pos,
@@ -205,17 +194,14 @@ print('place_node_def does not have on_place')
 		}
 
 		if enable_param2 then
-print('param2 enabled: '..param2)
 			-- place with param2 info
 			place_node.param2 = param2
 		else
-print('param2 disabled')
 			-- set default param2
 			place_node.param2 = 0
 		end
 
 		if place_node_def.place_param2 ~= nil then
-print('using predefined param2')
 			-- use predefined param2
 			place_node.param2 = place_node_def.place_param2
 		end
@@ -291,11 +277,9 @@ print('using predefined param2')
 		end
 
 		if place_node_def.on_place ~= minetest.item_place then
-print('non default item placement')
 			-- non-default item placement, use custom function (crops, other items)
 			-- taking an actual item instead of creating a new stack,
 			-- raises the chances that we get something useful
-print('best index>'..dump(inv_best_index)..'<')
 			local itemstack
 			if is_creative and inv_best_index == nil then
 				itemstack = ItemStack(msg.name .. " 1")
@@ -305,22 +289,17 @@ print('best index>'..dump(inv_best_index)..'<')
 				-- delete slot
 				inv:set_stack("main", inv_best_index, ItemStack("")) --inv:remove_item("main", msg.name)
 			end
-print('wear '..itemstack:get_wear())
+
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
-print('>'..dump(returnstack and returnstack:to_string() or 'nil')..'<>'..dump(success)..'<')
 			if returnstack then
-print('wear after: '.. returnstack:get_wear())
 				return_stack(pos, inv, returnstack)
 				if returnstack:get_wear() ~= itemstack:get_wear()
 					or returnstack:get_name() ~= itemstack:get_name()
 					or returnstack:get_count() < itemstack:get_count() then
 						success = true
 				end
-print('used ' .. msg.name .. ', returned: >' .. returnstack:to_string()
-.. '< c ' .. returnstack:get_count() .. ' }' .. itemstack:to_string())
 			end
 			if not success then
-print('no success')
 				if not returnstack then
 					-- some items aren't placed but don't return a stack
 					return_stack(pos, inv, itemstack)
@@ -333,7 +312,6 @@ print('no success')
 				return
 			end
 		else
-print('placing with core.set_node')
 			-- default on_place, use `set_node` to avoid side-effects (on-place rotations)
 			minetest.set_node(absolute_pos, place_node)
 			if not is_creative then
@@ -343,7 +321,6 @@ print('placing with core.set_node')
 
 		-- check if "after_place_node" is defined
 		if place_node_def.after_place_node then
-print('has after_place_node')
 			place_node_def.after_place_node(absolute_pos, player, ItemStack(), pointed_thing)
 		end
 
@@ -353,17 +330,12 @@ print('has after_place_node')
 		-- checking if param2 actually is what was requested
 		if enable_param2 then
 			local check_node = digibuilder.get_node(absolute_pos)
-print('placed is '.. dump(check_node))
-print('to place is '.. dump(place_node))
 			if check_node.name ~= msg.name then
 				-- this is not always a bad sign, certain nodes change their name (or fall)
 				-- also itemname and nodename don't always match
-print('not expected node at target, new name: ' .. check_node.name)
 			elseif check_node.param2 ~= place_node.param2 then
-print('enforcing swap_node')
 				-- enforce param2
 				minetest.swap_node(absolute_pos, place_node)
-print('target is now: '.. dump(digibuilder.get_node(absolute_pos)))
 			end
 		end
 
