@@ -9,6 +9,46 @@ function digibuilder.get_node(pos)
 	return node
 end
 
+-- looks for index of item to pass to fake player
+-- while doing so, might as well look for best stack/item
+local function best_inventory_index(inv, itemname)
+	if not inv:contains_item("main", itemname) then
+		return nil
+	end
+
+	local best_stack, best_index, stack
+	local list = inv:get_list("main")
+	local index = #list
+	repeat
+		stack = list[index]
+		if not stack:is_empty() then
+			if itemname == stack:get_name() then
+				if not best_stack then
+					best_stack = stack
+					best_index = index
+				elseif (best_stack:get_wear() == 0 and stack:get_wear() > 0)
+					or (best_stack:get_wear() > stack:get_wear() and stack:get_wear() > 0) then
+					best_stack = stack
+					best_index = index
+				end
+			end
+		end
+		index = index - 1
+	until index == 0
+
+	return best_index
+end
+
+-- deals with returned stacks
+local function return_stack(pos, inv, stack)
+	if stack:is_empty() then return end
+	local overflow_stack = inv:add_item("main", stack)
+	if not overflow_stack:is_empty() then
+		-- TODO: discuss if items should be dropped at absolute_pos or pos
+		minetest.add_item(pos, overflow_stack)
+	end
+end
+
 function digibuilder.digiline_effector(pos, _, channel, msg)
 
 	-- only allow table message types
@@ -97,7 +137,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 
 		local is_creative = minetest.check_player_privs(owner, "creative")
 		local inv = meta:get_inventory()
-
+		local inv_best_index = best_inventory_index(inv, msg.name)
 
 		if not is_creative then
 			-- check if node is buildable to
@@ -111,7 +151,10 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			end
 
 			-- check if node is in inventory
-			if not inv:contains_item("main", msg.name) then
+			-- this check does not work for items like technic:water_can
+			-- it may be in inventory but empty. Using an empty can with
+			-- digibuilder destroys it!
+			if not inv_best_index then
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
@@ -142,11 +185,6 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			return
 		end
 
-		if not is_creative then
-			-- remove item
-			inv:remove_item("main", msg.name)
-		end
-
 		-- only allow param2 setting for "facedir" types
 		local param2 = tonumber(msg.param2) or 0
 		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
@@ -160,7 +198,12 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			place_node.param2 = param2
 		else
 			-- set default param2
-			param2 = 0
+			place_node.param2 = 0
+		end
+
+		if place_node_def.place_param2 ~= nil then
+			-- use predefined param2
+			place_node.param2 = place_node_def.place_param2
 		end
 
 		-- place node inworld
@@ -169,9 +212,38 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			minetest.pos_to_string(absolute_pos)
 		)
 
+		local dir = minetest.facedir_to_dir(place_node.param2)
+		local pitch
+		local yaw
+		if dir.z < 0 then
+			yaw = 0
+			pitch = 0
+		elseif dir.z > 0 then
+			yaw = math.pi
+			pitch = 0
+		elseif dir.x < 0 then
+			yaw = 3*math.pi/2
+			pitch = 0
+		elseif dir.x > 0 then
+			yaw = math.pi/2
+			pitch = 0
+		elseif dir.y > 0 then
+			yaw = 0
+			pitch = -math.pi/2
+		else
+			yaw = 0
+			pitch = math.pi/2
+		end
 		-- create fake player for certain function arguments (after_place_node, etc)
 		local player = digibuilder.create_fake_player({
-			name = owner
+			name = owner,
+			inventory = inv,
+			wield_list = "main",
+			wield_index = inv_best_index,
+			position = vector.subtract(absolute_pos, vector.new(0, 1.5, 0)),
+			look_dir = vector.multiply(dir, -1),
+			look_pitch = pitch,
+			look_yaw = yaw
 		})
 
 		-- see:
@@ -179,27 +251,59 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		local pointed_thing = {}
 		pointed_thing.type = "node"
 		pointed_thing.above = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
-		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y-1, z=absolute_pos.z}
-
-		if place_node_def.paramtype2 == "facedir" then
-			pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(param2))
-		elseif place_node_def.paramtype2 == "wallmounted" then
-			pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(param2))
-		end
-
-		if place_node_def.place_param2 ~= nil then
-			-- use predefined param2
-			place_node.param2 = place_node_def.place_param2
+		pointed_thing.under = {x=absolute_pos.x, y=absolute_pos.y, z=absolute_pos.z}
+		-- Note: it is intentional that the default is a
+		-- neutral (non-directional) pointed_thing
+		if msg.up == true then
+			pointed_thing.under.y = absolute_pos.y + 1
+		elseif msg.down == true then
+			pointed_thing.under.y = absolute_pos.y - 1
+		elseif msg.west == true then
+			pointed_thing.under.x = absolute_pos.x - 1
+		elseif msg.east == true then
+			pointed_thing.under.x = absolute_pos.x + 1
+		elseif msg.south == true then
+			pointed_thing.under.z = absolute_pos.z - 1
+		elseif msg.north == true then
+			pointed_thing.under.z = absolute_pos.z + 1
+		elseif msg.auto == true then
+			if place_node_def.paramtype2 == "facedir" then
+				pointed_thing.under = vector.add(absolute_pos, minetest.facedir_to_dir(place_node.param2))
+			elseif place_node_def.paramtype2 == "wallmounted" then
+				pointed_thing.under = vector.add(absolute_pos, minetest.wallmounted_to_dir(place_node.param2))
+			else
+				pointed_thing.under.y = absolute_pos.y - 1
+			end
 		end
 
 		if place_node_def.on_place ~= minetest.item_place then
 			-- non-default item placement, use custom function (crops, other items)
-			local itemstack = ItemStack(msg.name .. " 1")
+			-- taking an actual item instead of creating a new stack,
+			-- raises the chances that we get something useful
+			local itemstack
+			if is_creative and inv_best_index == nil then
+				itemstack = ItemStack(msg.name .. " 1")
+			else
+				-- get a copy (with metadata)
+				itemstack = inv:get_stack("main", inv_best_index)
+				-- delete slot
+				inv:set_stack("main", inv_best_index, ItemStack("")) --inv:remove_item("main", msg.name)
+			end
+
 			local returnstack, success = place_node_def.on_place(ItemStack(itemstack), player, pointed_thing)
-			if returnstack and returnstack:get_count() < itemstack:get_count() then
-				success = true
+			if returnstack then
+				return_stack(pos, inv, returnstack)
+				if returnstack:get_wear() ~= itemstack:get_wear()
+					or returnstack:get_name() ~= itemstack:get_name()
+					or returnstack:get_count() < itemstack:get_count() then
+						success = true
+				end
 			end
 			if not success then
+				if not returnstack then
+					-- some items aren't placed but don't return a stack
+					return_stack(pos, inv, itemstack)
+				end
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
@@ -210,6 +314,9 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		else
 			-- default on_place, use `set_node` to avoid side-effects (on-place rotations)
 			minetest.set_node(absolute_pos, place_node)
+			if not is_creative then
+				inv:remove_item("main", msg.name)
+			end
 		end
 
 		-- check if "after_place_node" is defined
@@ -220,6 +327,18 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		-- check if the node is falling
 		minetest.check_for_falling(absolute_pos)
 
+		-- checking if param2 actually is what was requested
+		if enable_param2 then
+			local check_node = digibuilder.get_node(absolute_pos)
+			-- it is not always a bad sign when name of placed node does
+			-- not match itemname, certain nodes change their name (or fall)
+			-- also itemname and nodename don't always match
+			if check_node.name == msg.name and check_node.param2 ~= place_node.param2 then
+				-- enforce param2
+				minetest.swap_node(absolute_pos, place_node)
+			end
+		end
+
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			pos = msg.pos,
 			name = place_node.name,
@@ -228,3 +347,4 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		})
 	end
 end
+

@@ -51,6 +51,15 @@ if event.type == "digiline" and event.channel == "digibuilder" then
 end
 ```
 
+### pointed_thing handling
+
+If none of the fields { up, down, north, south, west, east, auto } are set to true
+then a zero orientational pointed_thing is used. i.e. under == above coordinates.
+If auto field is set to true, then a direction is set based on the evaluated param2
+or falls back to downward direction.
+Some nodes need a support-node to be at under position or they will be placed in
+the resulting under-coordinate. e.g. technic:hv_cable_plate_1
+
 # Examples
 
 For code examples for the `luacontroller` see the "examples" directory
