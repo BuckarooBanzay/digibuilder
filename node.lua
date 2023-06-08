@@ -1,6 +1,7 @@
 
 local has_default = minetest.get_modpath("default")
 local has_pipeworks = minetest.get_modpath("pipeworks")
+local has_vizlib = minetest.get_modpath("vizlib")
 
 local formspec = "size[8,9.2;]" ..
 	"list[context;main;0,0;8,4;]" ..
@@ -125,5 +126,11 @@ minetest.register_node("digibuilder:digibuilder", {
 		return stack:get_count()
 	end,
 
-	on_punch = digibuilder.show_marker,
+	on_punch = has_vizlib and function(pos, _, player)
+		if not player or player:get_wielded_item():get_name() ~= "" then
+			-- Only show area when using an empty hand
+			return
+		end
+		vizlib.draw_cube(pos, digibuilder.max_radius + 0.5, {player = player})
+	end or nil,
 })
