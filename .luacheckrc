@@ -18,7 +18,8 @@ read_globals = {
 	"pipeworks",
 	"mesecons",
 	"default",
-	"mtt"
+	"mtt",
+	"vizlib",
 }
 
 files["examples/"] = {
