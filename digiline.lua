@@ -158,7 +158,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 				digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 					pos = msg.pos,
 					error = true,
-					message = "Item not in inventory: " .. msg.name
+					message = "Item not in inventory: " .. (msg.name and msg.name or "<nil>")
 				})
 				return
 			end
