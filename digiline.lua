@@ -101,7 +101,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 		end
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, result)
 
-	elseif msg.command == "setnode" then
+	elseif msg.command == "setnode" and type(msg.name) == "string" then
 		-- set last call time of the command
 		local now = minetest.get_us_time()
 		local previous_time = meta:get_int("lastsetcommand")
