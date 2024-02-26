@@ -42,6 +42,7 @@ minetest.register_node("digibuilder:digibuilder", {
 		tubedevice = 1,
 		tubedevice_receiver = 1
 	},
+	is_ground_content = false,
 
 	sounds = has_default and default.node_sound_glass_defaults(),
 
