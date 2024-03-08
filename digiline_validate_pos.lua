@@ -9,17 +9,17 @@ function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
 		return
 	end
 
-	local x = tonumber(msg.pos.x)
-	local y = tonumber(msg.pos.y)
-	local z = tonumber(msg.pos.z)
-
-	if not x or not y or not z then
+	if type(msg.pos.x) ~= "number" or type(msg.pos.y) ~= "number" or type(msg.pos.z) ~= "number" then
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			error = true,
 			message = "'pos' has invalid x/y/z fields!"
 		})
 		return false
 	end
+
+	local x = tonumber(msg.pos.x)
+	local y = tonumber(msg.pos.y)
+	local z = tonumber(msg.pos.z)
 
 	if math.abs(x) > digibuilder.max_radius then
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
