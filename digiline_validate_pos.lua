@@ -1,12 +1,7 @@
 
--- https://stackoverflow.com/questions/37753694/lua-check-if-a-number-value-is-nan
-local function is_nan(n)
-	return n ~= n
-end
-
 -- checks for type and nan
 local function is_valid_number(n)
-	return type(n) == "number" and not is_nan(n)
+	return type(n) == "number" and not minetest.is_nan(n)
 end
 
 function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
