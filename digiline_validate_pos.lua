@@ -1,4 +1,14 @@
 
+-- https://stackoverflow.com/questions/37753694/lua-check-if-a-number-value-is-nan
+local function is_nan(n)
+	return n ~= n
+end
+
+-- checks for type and nan
+local function is_valid_number(n)
+	return type(n) == "number" and not is_nan(n)
+end
+
 function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
 
 	if not msg.pos then
@@ -9,7 +19,7 @@ function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
 		return
 	end
 
-	if type(msg.pos.x) ~= "number" or type(msg.pos.y) ~= "number" or type(msg.pos.z) ~= "number" then
+	if not is_valid_number(msg.pos.x) or not is_valid_number(msg.pos.y) or not is_valid_number(msg.pos.z) then
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			error = true,
 			message = "'pos' has invalid x/y/z fields!"
@@ -45,13 +55,13 @@ function digibuilder.digiline_validate_pos(pos, owner, set_channel, msg)
 		return false
 	end
 
-  if x == 0 and y == 0 and z == 0 then
-    digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
+	if x == 0 and y == 0 and z == 0 then
+	digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
 			error = true,
 			message = "can't work on myself!"
 		})
 		return false
-  end
+	end
 
 	if minetest.is_protected(pos, owner) then
 		digilines.receptor_send(pos, digibuilder.digiline_rules, set_channel, {
