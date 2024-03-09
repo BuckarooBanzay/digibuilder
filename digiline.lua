@@ -187,7 +187,7 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 
 		-- only allow param2 setting for "facedir" types
 		local param2 = tonumber(msg.param2) or 0
-		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 > 0 and param2 <= 255
+		local enable_param2 = place_node_def.paramtype2 == "facedir" and param2 and param2 >= 0 and param2 <= 255
 
 		local place_node = {
 			name = msg.name
