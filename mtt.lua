@@ -78,17 +78,17 @@ mtt.register("build-invalid-param2", function(callback)
     -- add inventory
     local meta = minetest.get_meta(builder_pos)
     local inv = meta:get_inventory()
-    inv:add_item("main", "default:tree 1")
+    inv:add_item("main", "default:cobble 1")
 
     -- send invalid command
     digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
         command = "setnode",
         pos = { x=0, y=1, z=0 },
         param2 = 255,
-        name = "default:tree"
+        name = "default:cobble"
     })
 
-    assert(minetest.get_node(build_pos).name == "default:tree")
+    assert(minetest.get_node(build_pos).name == "default:cobble")
 
     callback()
 end)
