@@ -212,12 +212,17 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			minetest.pos_to_string(absolute_pos)
 		)
 
-		local dir = vector.new(0, 1, 0)
+		local dir = minetest.facedir_to_dir(place_node.param2)
+		if not dir then
+			-- invalid param2 given, use defaults
+			dir = vector.new(0, 1, 0)
+			place_node.param2 = 0
+		end
+
 		local pitch = math.pi/2
 		local yaw = 0
 
 		if enable_param2 then
-			dir = minetest.facedir_to_dir(place_node.param2)
 			if dir.z < 0 then
 				yaw = 0
 				pitch = 0

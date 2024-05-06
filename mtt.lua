@@ -84,18 +84,12 @@ mtt.register("build-invalid-param2", function(callback)
     digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
         command = "setnode",
         pos = { x=0, y=1, z=0 },
+        param2 = 255,
         name = "default:tree"
     })
 
-    --[[
-        TODO: this doesn't work out somehow, node is still air, maybe fake-player related
-
-    print(dump({
-        build_pos = build_pos,
-        node = minetest.get_node(build_pos)
-    }))
     assert(minetest.get_node(build_pos).name == "default:tree")
-    --]]
+
     callback()
 end)
 
