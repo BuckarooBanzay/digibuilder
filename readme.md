@@ -4,6 +4,7 @@ Minetest digibuilder
 Build nodes with digiline commands
 
 ![](https://github.com/BuckarooBanzay/digibuilder/workflows/luacheck/badge.svg)
+![](https://github.com/BuckarooBanzay/digibuilder/workflows/test/badge.svg)
 [![ContentDB](https://content.minetest.net/packages/BuckarooBanzay/digibuilder/shields/downloads/)](https://content.minetest.net/packages/BuckarooBanzay/digibuilder/)
 
 <img src="./screenshot.png"/>
