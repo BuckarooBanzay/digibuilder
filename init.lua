@@ -6,7 +6,6 @@ digibuilder = {
 
 local MP = minetest.get_modpath("digibuilder")
 
-dofile(MP.."/create_fake_player.lua")
 dofile(MP.."/digiline_rules.lua")
 dofile(MP.."/digiline_validate_pos.lua")
 dofile(MP.."/digiline.lua")

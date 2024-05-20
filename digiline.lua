@@ -219,38 +219,14 @@ function digibuilder.digiline_effector(pos, _, channel, msg)
 			place_node.param2 = 0
 		end
 
-		local pitch = math.pi/2
-		local yaw = 0
-
-		if enable_param2 then
-			if dir.z < 0 then
-				yaw = 0
-				pitch = 0
-			elseif dir.z > 0 then
-				yaw = math.pi
-				pitch = 0
-			elseif dir.x < 0 then
-				yaw = 3*math.pi/2
-				pitch = 0
-			elseif dir.x > 0 then
-				yaw = math.pi/2
-				pitch = 0
-			elseif dir.y > 0 then
-				yaw = 0
-				pitch = -math.pi/2
-			end
-		end
-
 		-- create fake player for certain function arguments (after_place_node, etc)
-		local player = digibuilder.create_fake_player({
+		local player = fakelib.create_player({
 			name = owner,
 			inventory = inv,
 			wield_list = "main",
 			wield_index = inv_best_index,
-			position = vector.subtract(absolute_pos, vector.new(0, 1.5, 0)),
-			look_dir = vector.multiply(dir, -1),
-			look_pitch = pitch,
-			look_yaw = yaw
+			position = absolute_pos,
+			direction = vector.multiply(dir, -1),
 		})
 
 		-- see:
