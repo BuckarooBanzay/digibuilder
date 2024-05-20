@@ -11,3 +11,4 @@ jobs:
         git_dependencies: |
           https://github.com/minetest-mods/digilines
           https://github.com/minetest-mirrors/farming
+          https://github.com/OgelGames/fakelib
