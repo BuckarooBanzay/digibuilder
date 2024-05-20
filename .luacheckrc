@@ -3,23 +3,18 @@ globals = {
 }
 
 read_globals = {
-	-- Stdlib
-	string = {fields = {"split"}},
-	table = {fields = {"copy", "getn"}},
-	"VoxelManip",
-
 	-- Minetest
 	"minetest",
 	"vector", "ItemStack",
-	"dump", "VoxelArea",
 
-	-- Deps
+	-- Mods
 	"digilines",
 	"pipeworks",
 	"mesecons",
 	"default",
 	"mtt",
 	"vizlib",
+	"fakelib",
 }
 
 files["examples/"] = {
