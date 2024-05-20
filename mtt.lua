@@ -53,7 +53,7 @@ mtt.register("setnode-test", function(callback)
     -- add inventory
     local meta = minetest.get_meta(builder_pos)
     local inv = meta:get_inventory()
-    inv:add_item("main", "default:mese 1")
+    inv:set_stack("main", 1, "default:mese")
 
     -- schedule next command a second later to not trigger the "too fast" error
     minetest.after(1, function()
@@ -78,7 +78,7 @@ mtt.register("build-invalid-param2", function(callback)
     -- add inventory
     local meta = minetest.get_meta(builder_pos)
     local inv = meta:get_inventory()
-    inv:add_item("main", "default:cobble 1")
+    inv:set_stack("main", 1, "default:cobble")
 
     -- send invalid command
     digilines.receptor_send(neighbor_pos, digibuilder.digiline_rules, "digibuilder", {
